@@ -5,8 +5,10 @@ from .utils import sanitise
 
 class ActivityPoint:
     def __repr__(self):
-        return "<{} id={!r} point_type={!r} score={!r} reason={!r}>".format(
-            self.__class__.__name__, self.id, self.point_type, self.score, self.reason
+        return (
+            f"<{self.__class__.__name__} id={self.id!r}"
+            + f" point_type={self.point_type!r} score={self.score!r}"
+            + f" reason={self.reason!r}>"
         )
 
 
@@ -63,8 +65,10 @@ class Announcement:
         self.school_name = data["school_name"]
 
     def __repr__(self):
-        return "<Announcement id={!r} title={!r} timestamp={!r} school_name={!r}>".format(
-            self.id, self.title, self.timestamp, self.school_name
+        return (
+            f"<Announcement id={self.id!r} title={self.title!r}"
+            + f" timestamp={self.timestamp!r}"
+            + f" school_name={self.school_name!r}>"
         )
 
 
@@ -93,14 +97,11 @@ class Homework:  # different from homework.Homework
         self.status = HomeworkStatus(data["status"])
 
     def __repr__(self):
-        return "<Homework id={!r} lesson={!r} teacher={!r} title={!r} issue_date={!r} due_date={!r} status={!r}>".format(
-            self.id,
-            self.lesson,
-            self.teacher,
-            self.title,
-            self.issue_date,
-            self.due_date,
-            self.status,
+        return (
+            f"<Homework id={self.id!r} lesson={self.lesson!r}"
+            + f" teacher={self.teacher!r} title={self.title!r}"
+            + f" issue_date={self.issue_date!r} due_date={self.due_date!r}"
+            + f" status={self.status!r}>"
         )
 
 
@@ -112,18 +113,21 @@ class Attachment:
         self.validated_file = data.get("validated_attachment")
 
     def __repr__(self):
-        return "<Attachment id={!r} filename={!r}>".format(self.id, self.filename)
+        return f"<Attachment id={self.id!r} filename={self.filename!r}>"
 
 
 class HomeworkStatus:
     def __init__(self, data):
         self.id = data["id"]
         self.ticked = True if data["ticked"] == "yes" else False
-        self.submitted_attachments = [Attachment(d) for d in data["attachments"]]
+        self.submitted_attachments = [
+            Attachment(d) for d in data["attachments"]
+        ]
 
     def __repr__(self):
-        return "<HomeworkStatus id={!r} ticked={!r} submitted_attachments={!r}>".format(
-            self.id, self.ticked, self.submitted_attachments
+        return (
+            f"<HomeworkStatus id={self.id!r} ticked={self.ticked!r}"
+            + f" submitted_attachments={self.submitted_attachments!r}>"
         )
 
 
@@ -133,10 +137,10 @@ class Teacher:
         self.first_name = data["first_name"]
         self.last_name = data["last_name"]
 
-        self.name = "{} {} {}".format(self.title, self.first_name[0], self.last_name)
+        self.name = f"{self.title} {self.first_name[0]} {self.last_name}"
 
     def __repr__(self):
-        return "<Teacher name={!r}>".format(self.name)
+        return f"<Teacher name={self.name!r}>"
 
 
 class BasicLesson:
@@ -148,7 +152,7 @@ class BasicLesson:
             self.subject = None
 
     def __repr__(self):
-        return "<BasicLesson name={!r} subject={!r}>".format(self.name, self.subject)
+        return f"<BasicLesson name={self.name!r} subject={self.subject!r}>"
 
 
 class Detention:
@@ -167,21 +171,21 @@ class Detention:
         self.detention_type = data["detention_type"]["name"]
 
     def __repr__(self):
-        return "<Detention id={!r} attended={!r} date={!r} length={!r} lesson={!r} teacher={!r} detention_type={!r}>".format(
-            self.id,
-            self.attended,
-            self.date,
-            self.length,
-            self.lesson,
-            self.teacher,
-            self.detention_type,
+        return (
+            f"<Detention id={self.id!r} attended={self.attended!r}"
+            + f" date={self.date!r} length={self.length!r}"
+            + f" lesson={self.lesson!r} teacher={self.teacher!r}"
+            + f" detention_type={self.detention_type!r}>"
         )
 
 
 class Lesson(BasicLesson):
     def __init__(self, data):
         super().__init__(
-            {"name": data["lesson_name"], "subject": {"name": data["subject_name"]}}
+            {
+                "name": data["lesson_name"],
+                "subject": {"name": data["subject_name"]},
+            }
         )
         title, first_name, last_name = data["teacher_name"].split(" ")
         self.teacher = Teacher(
@@ -189,15 +193,19 @@ class Lesson(BasicLesson):
         )
         self.room = data["room_name"]
         self.date = datetime.strptime(data["date"], "%Y-%m-%d")
-        self.period = {"name": data["period_name"], "number": data["period_number"]}
+        self.period = {
+            "name": data["period_name"],
+            "number": data["period_number"],
+        }
         self.start = datetime.fromisoformat(data["start_time"])
         self.end = datetime.fromisoformat(data["end_time"])
         self.note = data["note"] or None
         self._key = data["key"]
 
     def __repr__(self):
-        return "<Lesson name={!r} subject={!r} room={!r}>".format(
-            self.name, self.subject, self.room
+        return (
+            f"<Lesson name={self.name!r} subject={self.subject!r}"
+            + f" room={self.room!r}>"
         )
 
 
@@ -209,7 +217,7 @@ class Timetable:
         self.end = datetime.fromisoformat(data["meta"]["end_time"])
 
     def __repr__(self):
-        return "<Timetable date={!r}>".format(self.date)
+        return f"<Timetable date={self.date!r}>"
 
 
 class AttendanceLesson(BasicLesson):
@@ -220,14 +228,18 @@ class AttendanceLesson(BasicLesson):
         self.status = data["status"]
 
     def __repr__(self):
-        return "<AttendanceLesson name={!r} code={!r}>".format(self.name, self.code)
+        return f"<AttendanceLesson name={self.name!r} code={self.code!r}>"
 
 
 class Attendance:
     def __init__(self, data):
         self.percentage = int(data["meta"]["percentage"])
-        self.percentage_singe_august = int(data["meta"]["percentage_singe_august"])
-        self.dates = [datetime.fromisoformat(date) for date in data["meta"]["dates"]]
+        self.percentage_singe_august = int(
+            data["meta"]["percentage_singe_august"]
+        )
+        self.dates = [
+            datetime.fromisoformat(date) for date in data["meta"]["dates"]
+        ]
         self.days = {}
 
         for date, day in data["data"].items():
@@ -240,4 +252,4 @@ class Attendance:
         self.end = datetime.fromisoformat(data["meta"]["end_date"])
 
     def __repr__(self):
-        return "<Attendance percentage={!r}>".format(self.percentage)
+        return f"<Attendance percentage={self.percentage!r}>"

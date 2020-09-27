@@ -21,7 +21,9 @@ class StudentClient:
         self.account_disabled = False
         self.announcements = 0
 
-    async def _request(self, verb, endpoint, *, params={}, data={}, headers={}):
+    async def _request(
+        self, verb, endpoint, *, params={}, data={}, headers={}
+    ):
         root = "https://www.classcharts.com/"
 
         async with self.session.request(
@@ -36,7 +38,9 @@ class StudentClient:
 
     async def login(self):
         if not self.session:
-            self.session = aiohttp.ClientSession(cookie_jar=aiohttp.CookieJar())
+            self.session = aiohttp.ClientSession(
+                cookie_jar=aiohttp.CookieJar()
+            )
 
         form = aiohttp.FormData(
             {
@@ -58,13 +62,13 @@ class StudentClient:
         await self.ping()
 
     async def logout(self):
-        headers = {"Authorization": "Basic {}".format(self._session_id)}
+        headers = {"Authorization": f"Basic {self._session_id}"}
         await self._request("POST", "apiv2student/logout", headers=headers)
         await self.session.close()
 
     async def ping(self):
         form = {"include_data": "true"}
-        headers = {"Authorization": "Basic {}".format(self._session_id)}
+        headers = {"Authorization": f"Basic {self._session_id}"}
         data = await self._request(
             "POST", "apiv2student/ping", data=form, headers=headers
         )
@@ -81,18 +85,23 @@ class StudentClient:
         self.announcements_count = user.pop("announcements_count")
         self.features = user
 
-    async def activity(self, *, after: datetime = None, before: datetime = None):
+    async def activity(
+        self, *, after: datetime = None, before: datetime = None
+    ):
         if after is None:
             after = datetime.now() - timedelta(days=31)
         if before is None:
             before = datetime.now()
 
-        params = {"from": after.strftime("%Y-%m-%d"), "to": before.strftime("%Y-%m-%d")}
-        headers = {"Authorization": "Basic {}".format(self._session_id)}
+        params = {
+            "from": after.strftime("%Y-%m-%d"),
+            "to": before.strftime("%Y-%m-%d"),
+        }
+        headers = {"Authorization": "Basic {self._session_id}"}
 
         data = await self._request(
             "POST",
-            "apiv2student/activity/{}".format(self.id),
+            f"apiv2student/activity/{self.id}",
             params=params,
             headers=headers,
         )
@@ -116,7 +125,7 @@ class StudentClient:
         *,
         display_date: DisplayDate = DisplayDate.due,
         after: datetime = None,
-        before: datetime = None
+        before: datetime = None,
     ):
         if after is None:
             after = datetime.now() - timedelta(days=31)
@@ -128,11 +137,11 @@ class StudentClient:
             "from": after.strftime("%Y-%m-%d"),
             "to": before.strftime("%Y-%m-%d"),
         }
-        headers = {"Authorization": "Basic {}".format(self._session_id)}
+        headers = {"Authorization": f"Basic {self._session_id}"}
 
         data = await self._request(
             "POST",
-            "apiv2student/homeworks/{}".format(self.id),
+            f"apiv2student/homeworks/{self.id}",
             params=params,
             headers=headers,
         )
@@ -146,18 +155,23 @@ class StudentClient:
 
         return ret
 
-    async def detentions(self, *, after: datetime = None, before: datetime = None):
+    async def detentions(
+        self, *, after: datetime = None, before: datetime = None
+    ):
         if after is None:
             after = datetime.now() - timedelta(days=31)
         if before is None:
             before = datetime.now()
 
-        params = {"from": after.strftime("%Y-%m-%d"), "to": before.strftime("%Y-%m-%d")}
-        headers = {"Authorization": "Basic {}".format(self._session_id)}
+        params = {
+            "from": after.strftime("%Y-%m-%d"),
+            "to": before.strftime("%Y-%m-%d"),
+        }
+        headers = {"Authorization": f"Basic {self._session_id}"}
 
         data = await self._request(
             "POST",
-            "apiv2student/detentions/{}".format(self.id),
+            f"apiv2student/detentions/{self.id}",
             params=params,
             headers=headers,
         )
@@ -181,18 +195,20 @@ class StudentClient:
         if day:
             params["date"] = day.strftime("%Y-%m-%d")
 
-        headers = {"Authorization": "Basic {}".format(self._session_id)}
+        headers = {"Authorization": f"Basic {self._session_id}"}
 
         data = await self._request(
             "POST",
-            "apiv2student/timetable/{}".format(self.id),
+            f"apiv2student/timetable/{self.id}",
             params=params,
             headers=headers,
         )
 
         return Timetable(data)
 
-    async def attendance(self, *, after: datetime = None, before: datetime = None):
+    async def attendance(
+        self, *, after: datetime = None, before: datetime = None
+    ):
         """Gets the attendance for by default the last month
 
         :param after: when the attendance should start
@@ -207,11 +223,11 @@ class StudentClient:
         if before:
             params["before"] = before.strftime("%Y-%m-%d")
 
-        headers = {"Authorization": "Basic {}".format(self._session_id)}
+        headers = {"Authorization": f"Basic {self._session_id}"}
 
         data = await self._request(
             "POST",
-            "apiv2student/attendance/{}".format(self.id),
+            f"apiv2student/attendance/{self.id}",
             params=params,
             headers=headers,
         )

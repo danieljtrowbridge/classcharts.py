@@ -19,11 +19,11 @@ class HomeworkClient:
         start = date.date() - timedelta(days=date.weekday())
         end = start + timedelta(days=6)
 
-        body = "lesson_name=&year={}&subject=&teacher=&from={}&to={}&hash={}".format(
-            year, start, end, self.school
-        )
-        body += (
-            "&homework_display_date=issue_date&csrf=a893725f23c7eb94f8a0e3a82e2a5ceb"
+        body = (
+            f"lesson_name=&year={year}&subject=&teacher=&from={start}"
+            + f"&to={end}&hash={self.school}"
+            + "&homework_display_date=issue_date"
+            + "&csrf=a893725f23c7eb94f8a0e3a82e2a5ceb"
         )
 
         headers = {
@@ -41,7 +41,9 @@ class HomeworkClient:
             "Pragma": "no-cache",
         }
 
-        async with self.session.post(self.url, data=body, headers=headers) as response:
+        async with self.session.post(
+            self.url, data=body, headers=headers
+        ) as response:
             res = await response.json()
 
         return self.homeworkify(res["data"])
