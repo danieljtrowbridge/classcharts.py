@@ -232,3 +232,13 @@ class StudentClient:
             headers=headers,
         )
         return Attendance(data)
+
+    async def num_reward_points(self):
+        """Gets the number of available reward points."""
+        data = await self._request(
+            "POST",
+            f"apiv2student/rewards/{self.id}",
+            params={},
+            headers={"Authorization": f"Basic {self._session_id}"},
+        )
+        return data["meta"]["pupil_score_balance"]
